@@ -31,9 +31,6 @@
             this.cmbHistoryMonthStart = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.numHistoryYearStart = new System.Windows.Forms.NumericUpDown();
-            this.numHistoryYearEnd = new System.Windows.Forms.NumericUpDown();
-            this.cmbHistoryMonthEnd = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtSeed = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -43,12 +40,11 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.pageFedParams = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
             this.numFinalSupportedFeds = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             this.txtResults = new System.Windows.Forms.TextBox();
             this.btnSeedGenerate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numHistoryYearStart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHistoryYearEnd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numGameStartYear)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -83,9 +79,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(7, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(135, 13);
+            this.label1.Size = new System.Drawing.Size(115, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "History Start Date Between";
+            this.label1.Text = "History Start Date After";
             // 
             // numHistoryYearStart
             // 
@@ -108,59 +104,6 @@
             0,
             0,
             0});
-            // 
-            // numHistoryYearEnd
-            // 
-            this.numHistoryYearEnd.Location = new System.Drawing.Point(563, 12);
-            this.numHistoryYearEnd.Maximum = new decimal(new int[] {
-            2100,
-            0,
-            0,
-            0});
-            this.numHistoryYearEnd.Minimum = new decimal(new int[] {
-            1900,
-            0,
-            0,
-            0});
-            this.numHistoryYearEnd.Name = "numHistoryYearEnd";
-            this.numHistoryYearEnd.Size = new System.Drawing.Size(120, 20);
-            this.numHistoryYearEnd.TabIndex = 4;
-            this.numHistoryYearEnd.Value = new decimal(new int[] {
-            1940,
-            0,
-            0,
-            0});
-            // 
-            // cmbHistoryMonthEnd
-            // 
-            this.cmbHistoryMonthEnd.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbHistoryMonthEnd.FormattingEnabled = true;
-            this.cmbHistoryMonthEnd.Items.AddRange(new object[] {
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"});
-            this.cmbHistoryMonthEnd.Location = new System.Drawing.Point(436, 12);
-            this.cmbHistoryMonthEnd.Name = "cmbHistoryMonthEnd";
-            this.cmbHistoryMonthEnd.Size = new System.Drawing.Size(121, 21);
-            this.cmbHistoryMonthEnd.TabIndex = 3;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(401, 15);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(25, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "and";
             // 
             // label3
             // 
@@ -272,15 +215,6 @@
             this.pageFedParams.Text = "Federations";
             this.pageFedParams.UseVisualStyleBackColor = true;
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(133, 13);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Final Supported Fed Count";
-            // 
             // numFinalSupportedFeds
             // 
             this.numFinalSupportedFeds.Location = new System.Drawing.Point(146, 7);
@@ -303,11 +237,21 @@
             0,
             0});
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(133, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Final Supported Fed Count";
+            // 
             // txtResults
             // 
             this.txtResults.Location = new System.Drawing.Point(20, 107);
             this.txtResults.Multiline = true;
             this.txtResults.Name = "txtResults";
+            this.txtResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtResults.Size = new System.Drawing.Size(405, 292);
             this.txtResults.TabIndex = 13;
             // 
@@ -335,9 +279,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtSeed);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.numHistoryYearEnd);
-            this.Controls.Add(this.cmbHistoryMonthEnd);
             this.Controls.Add(this.numHistoryYearStart);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbHistoryMonthStart);
@@ -345,7 +286,6 @@
             this.Text = "ProcVerse Generator";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numHistoryYearStart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHistoryYearEnd)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numGameStartYear)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -362,9 +302,6 @@
         private System.Windows.Forms.ComboBox cmbHistoryMonthStart;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numHistoryYearStart;
-        private System.Windows.Forms.NumericUpDown numHistoryYearEnd;
-        private System.Windows.Forms.ComboBox cmbHistoryMonthEnd;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtSeed;
         private System.Windows.Forms.Label label4;

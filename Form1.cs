@@ -12,6 +12,10 @@ namespace ProcVerse1
 {
     public partial class Form1 : Form
     {
+        readonly float MININUM_NEW_FED_CHANCE = 0.05f;
+        readonly float MINIMUM_CLOSE_FED_CHANCE = 0.001f;
+        readonly float MAXIMUM_CLOSE_FED_CHANCE = 0.95f;
+
         public Form1()
         {
             InitializeComponent();
@@ -23,7 +27,7 @@ namespace ProcVerse1
         private void Form1_Load(object sender, EventArgs e)
         {
             cmbHistoryMonthStart.SelectedIndex = 0;
-            cmbHistoryMonthEnd.SelectedIndex = 11;
+            //cmbHistoryMonthEnd.SelectedIndex = 11;
             cmbGameStartMonth.SelectedIndex = 0;            
         }
 
@@ -54,40 +58,85 @@ namespace ProcVerse1
             randomSeed = txtSeed.Text.GetHashCode();
             generator = new Random(randomSeed);
 
-            int monthStart = ((int)numHistoryYearStart.Value * 12) + cmbHistoryMonthStart.SelectedIndex + 1;
-            int monthEnd = ((int)numHistoryYearEnd.Value * 12) + cmbHistoryMonthEnd.SelectedIndex + 1;
-            int dbDate = ((int)numGameStartYear.Value * 12) + cmbGameStartMonth.SelectedIndex + 1;
+            int monthStart = ((int)numHistoryYearStart.Value * 12) + cmbHistoryMonthStart.SelectedIndex;
+            int dbDate = ((int)numGameStartYear.Value * 12) + cmbGameStartMonth.SelectedIndex;
 
-            int actualStart = generator.Next(monthStart, monthEnd + 1);
-            int numberOfMonthsToGenerate = dbDate - actualStart;
-            txtResults.Text = txtResults.Text + "Generating " + numberOfMonthsToGenerate + " months, starting with ";
-            /*int diff = actualStart - monthStart;
-            int monthSelect = diff % 12;
-            int yearSelect = (int)(diff / 12);
-            txtResults.Text = txtResults.Text + cmbHistoryMonthStart.Items[monthSelect] + " " + ((int)numHistoryYearStart.Value + yearSelect);*/
-            txtResults.Text = txtResults.Text + InterpretMonth(monthStart, actualStart);
-            GenerateFederationHistory(numberOfMonthsToGenerate, (int)numFinalSupportedFeds.Value ,generator);
+            int numberOfMonthsToGenerate = dbDate - monthStart;
+            txtResults.Text = txtResults.Text + "Generating " + numberOfMonthsToGenerate + " months, starting with " + InterpretMonth(monthStart) + Environment.NewLine;
+            GenerateFederationHistory(numberOfMonthsToGenerate, (int)numFinalSupportedFeds.Value ,generator, monthStart);
         }
 
-        private void GenerateFederationHistory(int monthsToGen, int finalSupportedFeds, Random g)
+        private void GenerateFederationHistory(int monthsToGen, int finalSupportedFeds, Random g, int startingMonthID)
         {
-            //throw new NotImplementedException();
+            FederationTracker ft = new FederationTracker();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < monthsToGen; i++)
+            {
+                float desiredFeds = (((float)i + 1) * finalSupportedFeds) / monthsToGen;
+                float newFedChance = desiredFeds - ft.ActiveCount;
+                float closeFedChance = ft.ActiveCount - desiredFeds - 0.75f;
+
+                if (closeFedChance < MINIMUM_CLOSE_FED_CHANCE)
+                    closeFedChance = MINIMUM_CLOSE_FED_CHANCE;
+                if (closeFedChance > MAXIMUM_CLOSE_FED_CHANCE)
+                    closeFedChance = MAXIMUM_CLOSE_FED_CHANCE;
+                if (newFedChance < MININUM_NEW_FED_CHANCE)
+                    newFedChance = MININUM_NEW_FED_CHANCE; // Always have at least SOME chance to create a new fed.
+
+                sb.Append("----------" + InterpretMonth(startingMonthID + i) + "----------" + Environment.NewLine);
+                sb.Append("Closing Chance: " + closeFedChance.ToString("P3") + Environment.NewLine);
+                sb.Append("Opening Chance: " + newFedChance.ToString("P3") + Environment.NewLine);
+
+                // Step 1 : Determine the success rate of each active fed
+                ft.AdvanceMonth(g, closeFedChance);
+
+                // Step 2 : Close feds if needed.  This comes before opening so a fed won't open and close in the same month.
+                double roll = g.NextDouble();
+                sb.Append("Roll to close fed: " + roll.ToString("N3") + Environment.NewLine);
+                if (roll < closeFedChance)
+                {
+                    if (ft.ActiveCount <= 0)
+                        break;
+                    FederationData fd = ft.CloseAFed(InterpretMonth(startingMonthID + i), g);
+                    if (fd != null)
+                    {
+                        sb.Append(fd.FedName + " Closed after " + fd.Age + " months" + Environment.NewLine);
+                    }
+                }
+
+                // Step 3: Open new feds if needed.
+
+                roll = g.NextDouble();
+                sb.Append("Roll to open fed: " + roll.ToString("N3") + Environment.NewLine);
+                while (newFedChance > 1.0f || roll < newFedChance)
+                {                    
+                    FederationData fd = ft.GenerateNewFed(InterpretMonth(startingMonthID + i));
+                    sb.Append(fd.FedName + " opened" + Environment.NewLine);
+                    newFedChance -= 1.0f;
+                    if (newFedChance > 0)
+                    {
+                        roll = g.NextDouble();
+                        sb.Append("Roll to open fed: " + roll.ToString("N3") + Environment.NewLine);
+                    }
+                }
+            }
+
+            sb.Append( Environment.NewLine + Environment.NewLine);
+            sb.Append( ft.ActiveFedStatus());
+            txtResults.Text += sb.ToString();
+
+            Clipboard.SetText(txtResults.Text);
         }
 
         private void btnSeedGenerate_Click(object sender, EventArgs e)
         {
             MakeSeed();
             Generate();
-        }
+        }        
 
-        
-
-        private string InterpretMonth(int startMonth, int monthToInterpret)
+        private string InterpretMonth(int monthIDToInterpret)
         {
-            int diff = monthToInterpret - startMonth;
-            int monthSelect = (diff % 12) + 1; // +1 to make 1 to 12 instead of 0 to 11
-            int yearSelect = (int)(diff / 12);
-            return (new DateTime(1, monthSelect, 1).ToString("MMMM") + " " + (int)(monthToInterpret/12));
+            return new DateTime((int)(monthIDToInterpret / 12), (monthIDToInterpret % 12)+1, 1).ToString("MMMM yyyy");
         }
     }
 }
